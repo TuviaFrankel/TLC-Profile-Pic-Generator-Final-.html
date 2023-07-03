@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TLC Profile Picture Generator</title>
+  <style>
+    body {
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 30px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container > div {
+      margin: 20px;
+    }
+
+    #drop-area {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #profile-preview {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-top: 30px;
+    }
+
+    canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>TLC Profile Picture Generator</h1>
+  <div class="container">
+    <div>
+      <select id="text-select">
+        <option value="">Select Text</option>
+        <option value="Lifelong Learner">Lifelong Learner</option>
+        <option value="Tech Enthusiast">Tech Enthusiast</option>
+        <option value="Creative Thinker">Creative Thinker</option>
+        <option value="Knowledge Seeker">Knowledge Seeker</option>
+        <option value="Growth Enthusiast">Growth Enthusiast</option>
+        <option value="Collaborative Spirit">Collaborative Spirit</option>
+        <option value="Continuous Learner">Continuous Learner</option>
+        <option value="Curiosity Catalyst">Curiosity Catalyst</option>
+        <option value="Knowledge Sharer">Knowledge Sharer</option>
+        <option value="Idea Generator">Idea Generator</option>
+        <option value="Reflective Practitioner">Reflective Practitioner</option>
+        <option value="Adaptive Learner">Adaptive Learner</option>
+        <option value="Empowered Learner">Empowered Learner</option>
+        <option value="Collaborative Learner">Collaborative Learner</option>
+      </select>
+    </div>
+    <div>
+      <div id="drop-area">
+        <p>Drag and drop your picture here</p>
+      </div>
+    </div>
+  </div>
+  <img id="profile-preview" src="" alt="Profile Preview">
+  <canvas id="canvas"></canvas>
+  <button id="download-btn" disabled>Download Picture</button>
+
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const profilePreview = document.getElementById('profile-preview');
+    const downloadBtn = document.getElementById('download-btn');
+    const textSelect = document.getElementById('text-select');
+    let imgData = null;
+
+    // Initialize canvas size
+    canvas.width = 200;
+    canvas.height = 200;
+
+    // Handle file drop
+    dropArea.addEventListener('dragenter', handleDragEnter, false);
+    dropArea.addEventListener('dragover', handleDragOver, false);
+    dropArea.addEventListener('dragleave', handleDragLeave, false);
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDragEnter(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      dropArea.style.background = '#e1e1e1';
+    }
+
+    function handleDragOver(event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    function handleDragLeave(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      dropArea.style.background = 'transparent';
+    }
+
+    function handleDrop(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      dropArea.style.background = 'transparent';
+
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+              generateProfilePicture(img);
+              profilePreview.src = canvas.toDataURL('image/png');
+              imgData = canvas.toDataURL('image/png');
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          alert('Please drop an image file.');
+        }
+      }
+    }
+
+    function handleDownload() {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'profile_picture.png';
+      a.click();
+    }
+
+    function generateProfilePicture(img) {
+      const text = textSelect.value;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const radius = canvas.width / 2;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      // Draw outer white circle
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.closePath();
+
+      if (text) {
+        // Draw circular profile picture
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius - 1, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        // Draw text banner
+        const fontSize = 12;
+        const font = `bold ${fontSize}px Century Gothic`;
+        const textWidth = ctx.measureText(text).width;
+
+        const bannerWidth = textWidth + 40;
+        const bannerHeight = 30;
+        const bannerX = centerX - bannerWidth / 2;
+        const bannerY = centerY + radius - bannerHeight - 10;
+
+        const gradient = ctx.createLinearGradient(bannerX, bannerY, bannerX + bannerWidth, bannerY);
+        gradient.addColorStop(0, '#F13985');
+        gradient.addColorStop(0.2, '#F56079');
+        gradient.addColorStop(0.4, '#F98D64');
+        gradient.addColorStop(0.6, '#FCB02D');
+
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.roundRect(bannerX, bannerY, bannerWidth, bannerHeight, 10).fill();
+
+        ctx.fillStyle = 'white';
+        ctx.shadowColor = 'transparent';
+        ctx.font = font;
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, centerX, bannerY + bannerHeight / 2 + 1);
+      } else {
+        // Draw circular profile picture without text
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+
+      downloadBtn.disabled = false;
+    }
+
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
+      this.beginPath();
+      this.moveTo(x + radius, y);
+      this.lineTo(x + width - radius, y);
+      this.quadraticCurveTo(x + width, y, x + width, y + radius);
+      this.lineTo(x + width, y + height - radius);
+      this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      this.lineTo(x + radius, y + height);
+      this.quadraticCurveTo(x, y + height, x, y + height - radius);
+      this.lineTo(x, y + radius);
+      this.quadraticCurveTo(x, y, x + radius, y);
+      this.closePath();
+      return this;
+    };
+
+    textSelect.addEventListener('change', () => {
+      if (imgData) {
+        const img = new Image();
+        img.onload = function() {
+          generateProfilePicture(img);
+          profilePreview.src = canvas.toDataURL('image/png');
+        };
+        img.src = imgData;
+      }
+    });
+
+    downloadBtn.addEventListener('click', handleDownload);
+  </script>
+</body>
+</html>
