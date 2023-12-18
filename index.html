@@ -50,20 +50,19 @@
     <div>
       <select id="text-select">
         <option value="">Select Text</option>
+        <option value="Sanskriti Strong">Sanskriti Strong</option>
+        <option value="Sanskriti Smart">Sanskriti Smart</option>
+        <option value="Sanskriti Spice">Sanskriti Spice</option>
+        <option value="Sanskriti Proud">Sanskriti Spice</option>
+        <option value="Sanskriti Learn">Sanskriti Learn</option>
         <option value="Lifelong Learner">Lifelong Learner</option>
-        <option value="Knowledge Seeker">Knowledge Seeker</option>
         <option value="Growth Enthusiast">Growth Enthusiast</option>
-        <option value="Collaborative Spirit">Collaborative Spirit</option>
-        <option value="Continuous Learner">Continuous Learner</option>
-        <option value="Curiosity Catalyst">Curiosity Catalyst</option>
         <option value="Knowledge Sharer">Knowledge Sharer</option>
-        <option value="Reflective Practitioner">Reflective Practitioner</option>
-        <option value="Adaptive Learner">Adaptive Learner</option>
-        <option value="Empowered Learner">Empowered Learner</option>
-        <option value="Team Learning Catalyst">Team Learning Catalyst</option>
-        <option value="Team Learning Fanatic">Team Learning Fanatic</option>
-        <option value="Experimentation Nut">Experimentation Nut</option>
-        <option value="Collaborative Learner">Collaborative Learner</option>
+        <option value="Learning Loco">Learning Loco</option>
+        <option value="Nuts for Knowledge">Nuts for Knowledge</option>
+        <option value="Change Champ">Change Champ</option>
+        <option value="Feedback Fan">Feedback Fan</option>
+        <option value="Feedback Welcome!">Feedback Welcome!</option>
       </select>
     </div>
     <div>
@@ -85,9 +84,9 @@
     const textSelect = document.getElementById('text-select');
     let imgData = null;
 
-    // Initialize canvas size
-    canvas.width = 200;
-    canvas.height = 200;
+    // Initialize canvas size to 1920x1080
+    canvas.width = 400;
+    canvas.height = 400;
 
     // Handle file drop
     dropArea.addEventListener('dragenter', handleDragEnter, false);
@@ -145,42 +144,24 @@
       a.click();
     }
 
+
+	
     function generateProfilePicture(img) {
       const text = textSelect.value;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const radius = canvas.width / 2;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-
-      // Draw outer white circle
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.closePath();
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       if (text) {
-        // Draw circular profile picture
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius - 1, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-
         // Draw text banner
-        const fontSize = 12;
+        const fontSize = 40; // Adjusted font size for larger canvas
         const font = `bold ${fontSize}px Century Gothic`;
-        const textWidth = ctx.measureText(text).width;
-
-        const bannerWidth = textWidth + 40;
-        const bannerHeight = 30;
-        const bannerX = centerX - bannerWidth / 2;
-        const bannerY = centerY + radius - bannerHeight - 10;
+        ctx.font = `bold ${fontSize}px Century Gothic`;
+	const textWidth = ctx.measureText(text).width;
+	const bannerWidth = textWidth + 100; // You may need to adjust the padding
+      	const bannerHeight = 120; // Adjusted for larger canvas
+        const bannerX = (canvas.width / 2) - (bannerWidth / 2);
+        const bannerY = canvas.height - bannerHeight - 40; // Adjusted for larger canvas
 
         const gradient = ctx.createLinearGradient(bannerX, bannerY, bannerX + bannerWidth, bannerY);
         gradient.addColorStop(0, '#F13985');
@@ -195,13 +176,9 @@
 
         ctx.fillStyle = 'white';
         ctx.shadowColor = 'transparent';
-        ctx.font = font;
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
-        ctx.fillText(text, centerX, bannerY + bannerHeight / 2 + 1);
-      } else {
-        // Draw circular profile picture without text
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.fillText(text, canvas.width / 2, bannerY + bannerHeight / 2 + 1);
       }
 
       downloadBtn.disabled = false;
