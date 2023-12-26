@@ -154,14 +154,14 @@
 
       if (text) {
         // Draw text banner
-        const fontSize = 36; // Adjusted font size for larger canvas
+        const fontSize = 32; // Adjusted font size for larger canvas
         const font = `bold ${fontSize}px Century Gothic`;
         ctx.font = `bold ${fontSize}px Century Gothic`;
 	const textWidth = ctx.measureText(text).width;
 	const bannerWidth = textWidth + 500; // You may need to adjust the padding
-      	const bannerHeight = 120; // Adjusted for larger canvas
+      	const bannerHeight = 50; // Adjusted for larger canvas
         const bannerX = (canvas.width / 2) - (bannerWidth / 2);
-        const bannerY = canvas.height - bannerHeight - 40; // Adjusted for larger canvas
+        const bannerY = canvas.height - bannerHeight - 30; // Adjusted for larger canvas
 
         const gradient = ctx.createLinearGradient(bannerX, bannerY, bannerX + bannerWidth, bannerY);
         gradient.addColorStop(0, '#F13985');
